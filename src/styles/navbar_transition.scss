@@ -1,0 +1,19 @@
+.navbaritem-enter {
+  transform: translateY(-0.5rem);
+  transition: 0.3s cubic-bezier(0, 1, 0.5, 1);
+
+  &.navbaritem-enter-active {
+    transform: translateY(0%);
+  }
+}
+
+.navbaritem-exit {
+  opacity: 1;
+  transform: translateY(0%);
+  transition: 0.15s ease-in-out;
+
+  &.navbaritem-exit-active {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}
