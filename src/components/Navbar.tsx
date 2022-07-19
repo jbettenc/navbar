@@ -12,6 +12,14 @@ interface NavbarProps {
   pageTitleMap?: Map<string, string>;
 }
 
+/**
+ * @param {NavbarProps} props
+ * @param {string} props.websiteLogo - Website logo to be displayed on the left side of the navbar
+ * @param {NavbarItem[] | undefined} props.navbarLinks - NavbarItem array of links to be shown in the navbar
+ * @param {any | undefined} props.accountData - Value used to determine Log in/Log out state of button in navbar
+ * @param {Map<string, string> | undefined} props.pageTitleMap - Map of pathname to page title for displaying page title on mobile layout of navbar
+ * @returns {JSX.Element}
+ */
 function Navbar(props: NavbarProps) {
   const { websiteLogo, navbarLinks, accountData, pageTitleMap } = props;
   const [subMenuActive, handleSubMenuActive] = useState(-1);
