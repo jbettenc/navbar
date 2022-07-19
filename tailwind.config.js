@@ -125,6 +125,14 @@ module.exports = {
       maxWidth: {
         "95/100": "95%",
         100: "25rem"
+      },
+      rotate: {
+        15: "15deg",
+        "-15": "-15deg",
+        10: "10deg",
+        "-10": "-10deg",
+        5: "5deg",
+        "-5": "-5deg"
       }
     },
     boxShadow: {
@@ -205,14 +213,6 @@ module.exports = {
       72: "18rem",
       100: "25rem",
       ...defaultTheme.minHeight
-    },
-    rotate: {
-      15: "15deg",
-      "-15": "-15deg",
-      10: "10deg",
-      "-10": "-10deg",
-      5: "5deg",
-      "-5": "-5deg"
     }
   },
   variants: {

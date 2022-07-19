@@ -71,10 +71,17 @@ function App() {
     }
   ];
 
+  const pageTitleMap = new Map<string, string>();
+  pageTitleMap.set("/", "Home");
+  pageTitleMap.set("//", "Home");
+  pageTitleMap.set("/home/", "Home");
+  pageTitleMap.set("/profile", "My Account");
+  pageTitleMap.set("/profile/", "My Account");
+
   return (
     <>
       <Router>
-        <Navbar websiteLogo={logo} navbarLinks={navbarLinks} />
+        <Navbar websiteLogo={logo} navbarLinks={navbarLinks} pageTitleMap={pageTitleMap} />
         <HomePage />
       </Router>
     </>

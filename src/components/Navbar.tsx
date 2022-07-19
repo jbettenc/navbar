@@ -1,5 +1,5 @@
-import { createRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { createRef, useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 import Button from "./Button";
 import { ReactComponent as ArrowDown } from "../assets/arrow_down.svg";
@@ -9,11 +9,135 @@ interface NavbarProps {
   websiteLogo: string;
   navbarLinks?: NavbarItem[];
   accountData?: any;
+  pageTitleMap?: Map<string, string>;
 }
 
 function Navbar(props: NavbarProps) {
-  const { websiteLogo, navbarLinks, accountData } = props;
+  const { websiteLogo, navbarLinks, accountData, pageTitleMap } = props;
   const [subMenuActive, handleSubMenuActive] = useState(-1);
+  const [showMobileNavbar, handleShowMobileNavbar] = useState(false);
+  const location = useLocation();
+  const mobileLinkRef = useRef(null);
+
+  useEffect(() => {
+    let eventListener: any = null;
+    if (subMenuActive >= 0) {
+      // @ts-ignore
+      eventListener = hideMenu.bind(this);
+      document.addEventListener("click", eventListener);
+    }
+
+    return () => {
+      if (eventListener) {
+        document.removeEventListener("click", eventListener);
+      }
+    };
+  }, [subMenuActive]);
+
+  const hideMenu = (event?: React.ChangeEvent<HTMLInputElement>) => {
+    if (event) {
+      const navbarComponents = document.getElementsByClassName("navbar-component");
+      console.log(navbarComponents);
+      for (let i = 0; i < navbarComponents.length; i++) {
+        if (navbarComponents[i].contains(event.target)) {
+          return;
+        }
+      }
+    }
+    console.log("Hide menu called");
+    handleSubMenuActive(-1);
+  };
+
+  const mobilelinks = (
+    <>
+      <CSSTransition
+        in={showMobileNavbar}
+        timeout={{ enter: 300, exit: 150 }}
+        classNames="navbaritem"
+        unmountOnExit
+        appear
+        exit={true}
+        nodeRef={mobileLinkRef}
+        className="navbaritem select-none"
+      >
+        <div ref={mobileLinkRef} className="z-40 flex-1 flex flex-col lg:flex-row w-full">
+          <div className="w-full lg:ml-0 flex flex-col lg:flex-row">
+            <div className="w-full block lg:flex">
+              <div className={`lg:my-auto bg-gray-bg-dark w-full`}>
+                <div
+                  id="dropdown"
+                  role="navigation"
+                  className="flex flex-col lg:flex-row w-full lg:w-auto pb-2 lg:pb-0 lg:px-0 lg:relative absolute bg-gray-bg-dark h-auto content-menu lg:h-10"
+                >
+                  <div className="ml-auto" />
+                  {navbarLinks && navbarLinks.length > 0
+                    ? navbarLinks.map((item: NavbarItem, idx) => {
+                        const itemRef: any = createRef();
+                        return (
+                          <div
+                            key={`nav-link-${idx}`}
+                            className={`navbar-component text-white my-auto cursor-pointer`}
+                            onClick={(e: any) => {
+                              if (subMenuActive === idx) {
+                                handleSubMenuActive(-1);
+                              } else {
+                                handleSubMenuActive(idx);
+                              }
+                              if (!item.children?.length) {
+                                handleShowMobileNavbar(false);
+                              }
+                              item.onClick && item.onClick(e);
+                            }}
+                          >
+                            <div className="flex my-auto p-4 hover:bg-gray-600">
+                              <div className="my-auto">{item.text}</div>
+                              {item.children && item.children.length > 0 ? (
+                                <ArrowDown
+                                  className={`my-auto transition duration-100 ml-2 inline-block fill-white fill-current ${
+                                    subMenuActive === idx ? "-rotate-180" : "rotate-0"
+                                  }`}
+                                />
+                              ) : null}
+                            </div>
+                            <CSSTransition
+                              in={item.children && item.children.length > 0 && subMenuActive === idx}
+                              timeout={{ enter: 300, exit: 150 }}
+                              classNames="navbaritem"
+                              unmountOnExit
+                              appear
+                              exit={true}
+                              nodeRef={itemRef}
+                              className="navbaritem select-none overflow-hidden"
+                            >
+                              <div ref={itemRef}>
+                                {item.children?.map((child, child_idx) => (
+                                  <div
+                                    key={`nav-link-${idx}-child-${child_idx}`}
+                                    className={`text-white my-auto cursor-pointer p-4 pl-8 hover:bg-gray-600`}
+                                    onClick={(e: any) => {
+                                      e.stopPropagation();
+                                      handleSubMenuActive(-1);
+                                      handleShowMobileNavbar(false);
+                                      child.onClick && child.onClick(e);
+                                    }}
+                                  >
+                                    {child.text}
+                                  </div>
+                                ))}
+                              </div>
+                            </CSSTransition>
+                          </div>
+                        );
+                      })
+                    : null}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CSSTransition>
+    </>
+  );
 
   const links = (
     <>
@@ -34,7 +158,7 @@ function Navbar(props: NavbarProps) {
                         return (
                           <div
                             key={`nav-link-${idx}`}
-                            className={`text-white${
+                            className={`navbar-component text-white${
                               idx === navbarLinks.length - 1 ? " " : " mr-8 "
                             }my-auto cursor-pointer`}
                             onClick={(e: any) => {
@@ -50,7 +174,7 @@ function Navbar(props: NavbarProps) {
                               {item.text}
                               {item.children && item.children.length > 0 ? (
                                 <ArrowDown
-                                  className={`my-auto transform duration-100 ml-2 inline-block fill-white fill-current ${
+                                  className={`my-auto transition duration-100 ml-2 inline-block fill-white fill-current ${
                                     subMenuActive === idx ? "-rotate-180" : "rotate-0"
                                   }`}
                                 />
@@ -66,7 +190,7 @@ function Navbar(props: NavbarProps) {
                                   appear
                                   exit={true}
                                   nodeRef={itemRef}
-                                  className="navbaritem select-none bg-gray-600 border border-gray-400 rounded-md overflow-hidden"
+                                  className="navbar-component navbaritem select-none bg-gray-600 border border-gray-400 rounded-md overflow-hidden"
                                 >
                                   <div ref={itemRef}>
                                     {item.children?.map((child, child_idx) => (
@@ -97,12 +221,22 @@ function Navbar(props: NavbarProps) {
     </>
   );
 
+  const getPageName = (): string => {
+    const pathname = location.pathname;
+    if (pageTitleMap && pageTitleMap.has(pathname)) {
+      const pageName = pageTitleMap.get(pathname);
+      return pageName ? pageName : "";
+    }
+
+    return "";
+  };
+
   return (
     <>
       <div className={`z-40 w-full absolute font-nexa`}>
         <nav className={`select-none bg-gray-bg-dark w-full`}>
-          <div id="nav" className={`w-full flex flex-col lg:flex-row bg-gray-bg-dark`}>
-            <div className="max-w-7xl w-full py-2 flex flex-col lg:flex-row mx-auto px-6 lg:px-8">
+          <div id="nav" className={`max-w-7xl mx-auto w-full flex flex-col lg:flex-row bg-gray-bg-dark`}>
+            <div className="w-full py-2 flex flex-row lg:flex-row px-6 lg:px-8">
               {/* Website Logo */}
               <Link className="flex-shrink-0 lg:block hidden" to="/">
                 <img
@@ -114,10 +248,32 @@ function Navbar(props: NavbarProps) {
               </Link>
 
               {/* Links */}
-              {links}
+              <div className="block lg:hidden mr-auto">
+                <div
+                  className={`block lg:hidden my-auto bg-transparent mr-2 flex flex-row cursor-pointer`}
+                  onClick={() => {
+                    handleShowMobileNavbar(!showMobileNavbar);
+                  }}
+                >
+                  <img src={websiteLogo} className={`select-none h-10 w-10 sm:h-10 sm:w-10`} alt="MAD" />
+                  <div
+                    className={`my-auto text-white ml-4 ${
+                      accountData ? "block" : `hidden ${getPageName() === "" ? "xs:hidden" : "xs:block"}`
+                    }`}
+                  >
+                    {getPageName()}
+                  </div>
+                  <ArrowDown
+                    className={`fill-white my-auto ml-2 transform duration-100 ${
+                      showMobileNavbar ? "-rotate-180" : "rotate-0"
+                    }`}
+                  />
+                </div>
+              </div>
+              <div className="hidden lg:block flex ml-auto my-auto">{links}</div>
 
               {/* Account Menu */}
-              <div className="hidden lg:block text-white my-auto lg:pl-6 cursor-pointer xl:ml-8">
+              <div className="text-white my-auto lg:pl-6 cursor-pointer xl:ml-8 flex-shrink-0">
                 <Button
                   onClick={() => {}}
                   text={<div className="text-center font-bold leading-none ">{accountData ? "Log out" : "Log in"}</div>}
@@ -126,6 +282,15 @@ function Navbar(props: NavbarProps) {
                 />
               </div>
             </div>
+
+            {/* Mobile links */}
+            <div className="block lg:hidden">{mobilelinks}</div>
+            <div
+              className={`top-0 left-0 -z-10 opacity-50 w-screen h-screen bg-gray-600 ${
+                showMobileNavbar ? "fixed lg:hidden" : "hidden"
+              }`}
+              onClick={() => handleShowMobileNavbar(false)}
+            />
           </div>
         </nav>
       </div>
