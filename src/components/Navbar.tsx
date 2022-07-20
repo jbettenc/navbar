@@ -110,7 +110,7 @@ function Navbar(props: NavbarProps) {
                             </div>
                             <CSSTransition
                               in={item.children && item.children.length > 0 && subMenuActive === idx}
-                              timeout={{ enter: 300, exit: 200 }}
+                              timeout={{ enter: 300, exit: 300 }}
                               classNames="navbaritem"
                               unmountOnExit
                               appear
@@ -193,7 +193,7 @@ function Navbar(props: NavbarProps) {
                               <div className="relative flex-shrink-0 mt-2">
                                 <CSSTransition
                                   in={item.children && item.children.length > 0 && subMenuActive === idx}
-                                  timeout={{ enter: 300, exit: 200 }}
+                                  timeout={{ enter: 300, exit: 300 }}
                                   classNames="navbaritem"
                                   unmountOnExit
                                   appear

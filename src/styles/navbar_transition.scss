@@ -23,17 +23,18 @@
 // to have smooth background size changes when layouts change size while being displayed.
 .navbaritem-enter {
   max-height: 0;
-  transition: max-height 0.3s ease-in;
+  transition: 0.3s ease-in;
   overflow: hidden;
 
   &.navbaritem-enter-active {
-    max-height: 1500px;
+    max-height: 500px;
   }
 }
 
 .navbaritem-exit {
-  max-height: 1500px;
-  transition: 0.2s ease-out;
+  max-height: 500px;
+  transition: 0.3s ease-out;
+  overflow: hidden;
 
   &.navbaritem-exit-active {
     max-height: 0;
