@@ -23,9 +23,9 @@ const Button = (props: ButtonProps) => {
 
   const buttonClasses = useMemo(
     () =>
-      `${className}${
-        disabled ? " bg-gray-600 hover:bg-gray-600 cursor-not-allowed" : " cursor-pointer"
-      } select-none border border-${borderColor} rounded-md p-2`,
+      `${className}${disabled ? " bg-gray-600 hover:bg-gray-600 cursor-not-allowed" : " cursor-pointer"} select-none${
+        borderColor ? ` border border-${borderColor} ` : ""
+      }rounded-md p-2`,
     [className, disabled, borderColor]
   );
 

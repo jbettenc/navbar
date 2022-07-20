@@ -1,9 +1,11 @@
-import { createRef, useEffect, useRef, useState } from "react";
+import { createRef, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
+import { useSpring, config, animated } from "react-spring";
 import Button from "./Button";
 import { ReactComponent as ArrowDown } from "../assets/arrow_down.svg";
 import "../styles/navbar_transition.scss";
+import { useHeight } from "../hooks/useHeight";
 
 interface NavbarProps {
   websiteLogo: string;
@@ -25,7 +27,15 @@ function Navbar(props: NavbarProps) {
   const [subMenuActive, handleSubMenuActive] = useState(-1);
   const [showMobileNavbar, handleShowMobileNavbar] = useState(false);
   const location = useLocation();
-  const mobileLinkRef = useRef(null);
+
+  const [heightRef, height] = useHeight();
+  const slideInStyles = useSpring({
+    config: { ...config.default },
+    from: { height: 0 },
+    to: {
+      height: showMobileNavbar ? height : 0
+    }
+  });
 
   useEffect(() => {
     let eventListener: any = null;
@@ -45,7 +55,6 @@ function Navbar(props: NavbarProps) {
   const hideMenu = (event?: React.ChangeEvent<HTMLInputElement>) => {
     if (event) {
       const navbarComponents = document.getElementsByClassName("navbar-component");
-      console.log(navbarComponents);
       for (let i = 0; i < navbarComponents.length; i++) {
         if (navbarComponents[i].contains(event.target)) {
           return;
@@ -58,24 +67,16 @@ function Navbar(props: NavbarProps) {
 
   const mobilelinks = (
     <>
-      <CSSTransition
-        in={showMobileNavbar}
-        timeout={{ enter: 300, exit: 150 }}
-        classNames="navbaritem"
-        unmountOnExit
-        appear
-        exit={true}
-        nodeRef={mobileLinkRef}
-        className="navbaritem select-none"
-      >
-        <div ref={mobileLinkRef} className="z-40 flex-1 flex flex-col lg:flex-row w-full">
-          <div className="w-full lg:ml-0 flex flex-col lg:flex-row">
-            <div className="w-full block lg:flex">
-              <div className={`lg:my-auto bg-gray-bg-dark w-full`}>
+      <div className="z-40 flex-1 flex flex-col w-full">
+        <div className="w-full lg:ml-0 flex flex-col ">
+          <div className="w-full block ">
+            <div className={`bg-gray-bg-dark w-full`}>
+              <animated.div style={{ ...slideInStyles, overflow: "hidden" }}>
                 <div
+                  ref={heightRef}
                   id="dropdown"
                   role="navigation"
-                  className="flex flex-col lg:flex-row w-full lg:w-auto pb-2 lg:pb-0 lg:px-0 lg:relative absolute bg-gray-bg-dark h-auto content-menu lg:h-10"
+                  className="flex flex-col w-full pb-2 bg-gray-bg-dark h-auto content-menu"
                 >
                   <div className="ml-auto" />
                   {navbarLinks && navbarLinks.length > 0
@@ -109,7 +110,7 @@ function Navbar(props: NavbarProps) {
                             </div>
                             <CSSTransition
                               in={item.children && item.children.length > 0 && subMenuActive === idx}
-                              timeout={{ enter: 300, exit: 150 }}
+                              timeout={{ enter: 300, exit: 200 }}
                               classNames="navbaritem"
                               unmountOnExit
                               appear
@@ -139,11 +140,11 @@ function Navbar(props: NavbarProps) {
                       })
                     : null}
                 </div>
-              </div>
+              </animated.div>
             </div>
           </div>
         </div>
-      </CSSTransition>
+      </div>
     </>
   );
 
@@ -192,7 +193,7 @@ function Navbar(props: NavbarProps) {
                               <div className="relative flex-shrink-0 mt-2">
                                 <CSSTransition
                                   in={item.children && item.children.length > 0 && subMenuActive === idx}
-                                  timeout={{ enter: 400, exit: 200 }}
+                                  timeout={{ enter: 300, exit: 200 }}
                                   classNames="navbaritem"
                                   unmountOnExit
                                   appear
@@ -281,11 +282,10 @@ function Navbar(props: NavbarProps) {
               <div className="hidden lg:block flex ml-auto my-auto">{links}</div>
 
               {/* Account Menu */}
-              <div className="text-white my-auto lg:pl-6 cursor-pointer xl:ml-8 flex-shrink-0">
+              <div className="text-white my-auto lg:pl-6 cursor-pointer xl:ml-8 flex-shrink-0 my-auto">
                 <Button
                   onClick={() => {}}
                   text={<div className="text-center font-bold leading-none ">{accountData ? "Log out" : "Log in"}</div>}
-                  borderColor="none"
                   className="text-gray-bg-dark bg-yellow-300 hover:bg-yellow-200 rounded-full w-full px-6 py-3"
                 />
               </div>

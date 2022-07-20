@@ -1,19 +1,41 @@
+// The following does a translateY down (in) and up (out)
+// .navbaritem-enter {
+//   transform: translateY(-0.5rem);
+//   transition: 0.3s cubic-bezier(0, 1, 0.5, 1);
+
+//   &.navbaritem-enter-active {
+//     transform: translateY(0%);
+//   }
+// }
+
+// .navbaritem-exit {
+//   opacity: 1;
+//   transform: translateY(0%);
+//   transition: 0.2s cubic-bezier(0, 1, 0.5, 1);
+
+//   &.navbaritem-exit-active {
+//     opacity: 0;
+//     transform: translateY(-0.5rem);
+//   }
+// }
+
+// The following reveals the content from the top down. Wrap the container with react-spring
+// to have smooth background size changes when layouts change size while being displayed.
 .navbaritem-enter {
-  transform: translateY(-0.5rem);
-  transition: 0.3s cubic-bezier(0, 1, 0.5, 1);
+  max-height: 0;
+  transition: max-height 0.3s ease-in;
+  overflow: hidden;
 
   &.navbaritem-enter-active {
-    transform: translateY(0%);
+    max-height: 1500px;
   }
 }
 
 .navbaritem-exit {
-  opacity: 1;
-  transform: translateY(0%);
-  transition: 0.15s ease-in-out;
+  max-height: 1500px;
+  transition: 0.2s ease-out;
 
   &.navbaritem-exit-active {
-    opacity: 0;
-    transform: translateY(-0.5rem);
+    max-height: 0;
   }
 }
